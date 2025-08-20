@@ -16,6 +16,7 @@ class WheelOfFortune {
 
         this.init();
         this.loadStatistics();
+        this.loadTheme();
     }
 
     init() {
@@ -32,11 +33,15 @@ class WheelOfFortune {
         this.clearAllBtn = document.getElementById('clearAllBtn');
         this.clearAllBtnMobile = document.getElementById('clearAllBtnMobile');
         this.spinBtn = document.getElementById('spinBtn');
+        this.spinBtnMobile = document.getElementById('spinBtnMobile');
         this.winnerDisplay = document.getElementById('winner');
         this.winnerText = document.getElementById('winnerText');
         this.statsBtn = document.getElementById('statsBtn');
         this.statsModal = document.getElementById('statsModal');
         this.closeStats = document.getElementById('closeStats');
+        this.settingsBtn = document.getElementById('settingsBtn');
+        this.settingsModal = document.getElementById('settingsModal');
+        this.closeSettings = document.getElementById('closeSettings');
 
         this.bindEvents();
         this.addSampleItems();
@@ -80,6 +85,11 @@ class WheelOfFortune {
             this.spinWheel();
         });
 
+        // Mobile spin events
+        this.spinBtnMobile.addEventListener('click', () => {
+            this.spinWheel();
+        });
+
         // Wheel click events
         this.wheel.addEventListener('click', () => {
             if (!this.isSpinning && this.items.length > 0) {
@@ -116,6 +126,29 @@ class WheelOfFortune {
         this.clearStatsBtn = document.getElementById('clearStatsBtn');
         this.clearStatsBtn.addEventListener('click', () => {
             this.clearStatistics();
+        });
+
+        // Settings events
+        this.settingsBtn.addEventListener('click', () => {
+            this.showSettings();
+        });
+
+        this.closeSettings.addEventListener('click', () => {
+            this.hideSettings();
+        });
+
+        this.settingsModal.addEventListener('click', (e) => {
+            if (e.target === this.settingsModal) {
+                this.hideSettings();
+            }
+        });
+
+        // Theme selection events
+        document.querySelectorAll('.theme-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const theme = card.getAttribute('data-theme');
+                this.applyTheme(theme);
+            });
         });
 
         this.statsModal.addEventListener('click', (e) => {
@@ -325,7 +358,9 @@ class WheelOfFortune {
 
         this.isSpinning = true;
         this.spinBtn.disabled = true;
+        this.spinBtnMobile.disabled = true;
         this.spinBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Pörgetés...';
+        this.spinBtnMobile.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Pörgetés...';
 
         // Random spin duration between 0.5-1.5 seconds (faster)
         const spinDuration = Math.random() * 1000 + 500;
@@ -371,7 +406,9 @@ class WheelOfFortune {
                 this.showWinner(winner);
                 this.isSpinning = false;
                 this.spinBtn.disabled = false;
+                this.spinBtnMobile.disabled = false;
                 this.spinBtn.innerHTML = '<i class="fas fa-play"></i> Pörgetés';
+                this.spinBtnMobile.innerHTML = '<i class="fas fa-play"></i> Pörgetés';
             }, 500);
             
         }, spinDuration);
@@ -543,6 +580,37 @@ class WheelOfFortune {
         }, 3000);
     }
 
+    showSettings() {
+        this.settingsModal.classList.remove('hidden');
+    }
+
+    hideSettings() {
+        this.settingsModal.classList.add('hidden');
+    }
+
+    applyTheme(theme) {
+        // Remove all existing theme classes
+        document.body.className = '';
+        
+        // Apply new theme
+        document.body.classList.add(`theme-${theme}`);
+        
+        // Save theme preference
+        localStorage.setItem('selectedTheme', theme);
+        
+        // Hide settings modal
+        this.hideSettings();
+    }
+
+
+
+    loadTheme() {
+        const savedTheme = localStorage.getItem('selectedTheme');
+        if (savedTheme) {
+            this.applyTheme(savedTheme);
+        }
+    }
+
     updateStatisticsDisplay() {
         // Update summary stats
         document.getElementById('totalSpins').textContent = this.statistics.totalSpins.toString();
@@ -577,20 +645,36 @@ class WheelOfFortune {
                 if (stats.lastWin) {
                     const lastWinDate = new Date(stats.lastWin);
                     const now = new Date();
-                    const diffTime = now - lastWinDate;
-                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    
+                    // Set both dates to midnight for accurate day comparison
+                    const lastWinDateOnly = new Date(lastWinDate.getFullYear(), lastWinDate.getMonth(), lastWinDate.getDate());
+                    const nowDateOnly = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                    
+                    const diffTime = nowDateOnly - lastWinDateOnly;
+                    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                    
+                    // Always show the exact date and time
+                    const dateStr = lastWinDate.toLocaleDateString('hu-HU', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit'
+                    });
+                    const timeStr = lastWinDate.toLocaleTimeString('hu-HU', {
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
                     
                     if (diffDays === 0) {
-                        lastWinText = 'Ma';
+                        lastWinText = `Ma ${timeStr}`;
                         lastWinColor = 'text-red-600 font-bold';
                     } else if (diffDays === 1) {
-                        lastWinText = 'Tegnap';
+                        lastWinText = `Tegnap ${timeStr}`;
                         lastWinColor = 'text-orange-600 font-semibold';
                     } else if (diffDays <= 7) {
-                        lastWinText = `${diffDays} napja`;
+                        lastWinText = `${dateStr} ${timeStr}`;
                         lastWinColor = 'text-yellow-600';
                     } else {
-                        lastWinText = lastWinDate.toLocaleDateString('hu-HU');
+                        lastWinText = `${dateStr} ${timeStr}`;
                         lastWinColor = 'text-green-600';
                     }
                 }
@@ -629,7 +713,6 @@ class WheelOfFortune {
         // Destroy existing charts
         if (this.pieChart) this.pieChart.destroy();
         if (this.barChart) this.barChart.destroy();
-        if (this.lineChart) this.lineChart.destroy();
 
         const sortedStats = Object.entries(this.statistics.itemStats)
             .sort((a, b) => b[1].wins - a[1].wins);
@@ -697,88 +780,7 @@ class WheelOfFortune {
             }
         });
 
-        // Line Chart - Recent Winners Timeline
-        const lineCtx = document.getElementById('lineChart').getContext('2d');
-        const recentSpins = this.statistics.spinHistory.slice(-10); // Last 10 spins
-        
-        // Create timeline data
-        const timelineData = recentSpins.map((spin, index) => {
-            const date = new Date(spin.date);
-            return {
-                x: date,
-                y: index + 1,
-                winner: spin.winner
-            };
-        });
-        
-        this.lineChart = new Chart(lineCtx, {
-            type: 'scatter',
-            data: {
-                datasets: [{
-                    label: 'Legutóbbi nyertesek',
-                    data: timelineData,
-                    backgroundColor: timelineData.map(point => 
-                        this.colors[this.items.indexOf(point.winner) % this.colors.length]
-                    ),
-                    borderColor: timelineData.map(point => 
-                        this.colors[this.items.indexOf(point.winner) % this.colors.length]
-                    ),
-                    borderWidth: 2,
-                    pointRadius: 8,
-                    pointHoverRadius: 12
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        callbacks: {
-                            title: function(context) {
-                                const date = new Date(context[0].parsed.x);
-                                return date.toLocaleDateString('hu-HU', {
-                                    weekday: 'long',
-                                    year: 'numeric',
-                                    month: 'long',
-                                    day: 'numeric',
-                                    hour: '2-digit',
-                                    minute: '2-digit'
-                                });
-                            },
-                            label: function(context) {
-                                return `Nyertes: ${context[0].raw.winner}`;
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    x: {
-                        type: 'time',
-                        time: {
-                            unit: 'day',
-                            displayFormats: {
-                                day: 'MMM dd'
-                            }
-                        },
-                        title: {
-                            display: true,
-                            text: 'Dátum'
-                        }
-                    },
-                    y: {
-                        beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: 'Pörgetés sorszáma'
-                        },
-                        ticks: {
-                            stepSize: 1
-                        }
-                    }
-                }
-            }
-        });
+
     }
 
     saveStatistics() {
