@@ -7,6 +7,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -79,13 +81,44 @@
             <h1 class="text-white text-3xl md:text-4xl font-bold text-shadow-lg flex items-center gap-4">
                 <i class="fas fa-dice"></i> Szerencsekerék
             </h1>
-            <button id="statsBtn" class="bg-white/20 border-2 border-white/30 text-white px-6 py-3 rounded-full cursor-pointer font-semibold transition-all duration-300 backdrop-blur-sm flex items-center gap-2 hover:bg-white/30 hover:-translate-y-1 hover:shadow-lg">
+            <button id="statsBtn" class="bg-white/20 border-2 border-white/30 text-white px-6 py-3 rounded-full cursor-pointer font-semibold transition-all duration-300 backdrop-blur-sm flex items-center gap-2 hover:bg-white/30 hover:-translate-y-1 hover:shadow-lg mt-2">
                 <i class="fas fa-chart-bar"></i> Statisztikák
             </button>
         </header>
 
-        <main class="flex-1 flex flex-col items-center gap-8">
-            <div class="flex flex-col items-center gap-10 w-full max-w-4xl">
+        <main class="flex-1 flex flex-col items-center gap-8 px-4 lg:px-8 relative">
+            <!-- Left side - Items panel with input (PC only) -->
+            <div class="hidden lg:block fixed left-8 top-24 w-80 z-10">
+                <div class="bg-white/95 p-6 rounded-3xl shadow-xl backdrop-blur-sm">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                        <i class="fas fa-list"></i> Kerék elemek
+                    </h3>
+                    
+                    <!-- Input section in left panel -->
+                    <div class="mb-5">
+                        <div class="flex flex-col gap-3 mb-4">
+                            <input type="text" id="itemInput" placeholder="Írd be az elemet és nyomd meg az Enter-t..." class="w-full px-4 py-3 border-2 border-gray-200 rounded-full text-sm outline-none transition-all duration-300 bg-white focus:border-purple-500 focus:ring-4 focus:ring-purple-100">
+                            <button id="addBtn" class="bg-purple-500 text-white border-none px-4 py-3 rounded-full cursor-pointer text-sm transition-all duration-300 hover:bg-purple-600 hover:-translate-y-1 flex items-center justify-center gap-2">
+                                <i class="fas fa-plus"></i> Elem hozzáadása
+                            </button>
+                        </div>
+                        
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-gray-600 text-sm">Elemek: <span id="itemCount" class="font-semibold">0</span></span>
+                            <button id="clearAllBtn" class="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-semibold transition-all duration-300 hover:bg-red-600 hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed">
+                                <i class="fas fa-trash"></i> Összes törlése
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="itemsList" class="flex flex-col gap-2 max-h-[300px] overflow-y-auto">
+                        <!-- Items will be displayed here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Center - Wheel and controls -->
+            <div class="flex flex-col items-center gap-10 w-full">
                 <div class="relative flex justify-center items-center">
                     <div id="wheel" class="w-96 h-96 md:w-[500px] md:h-[500px] rounded-full relative shadow-2xl border-8 border-white overflow-hidden">
                         <!-- Wheel segments will be generated here -->
@@ -96,33 +129,44 @@
                     </div>
                 </div>
                 
-                <div class="flex flex-col gap-8 w-full max-w-lg">
+                <!-- Spin button (Mobile) -->
+                <div class="lg:hidden text-center">
+                    <button id="spinBtn" class="bg-gradient-to-r from-red-400 to-orange-500 text-white border-none px-10 py-5 rounded-full text-xl font-semibold cursor-pointer transition-all duration-300 shadow-lg inline-flex items-center gap-3 mb-4 hover:-translate-y-1 hover:shadow-xl disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none">
+                        <i class="fas fa-play"></i> Pörgetés
+                    </button>
+                    <p class="text-white/80 text-sm">Vagy nyomd meg a Space-t / Enter-t</p>
+                </div>
+                
+                <!-- Mobile input and items (hidden on PC) -->
+                <div class="lg:hidden flex flex-col gap-8 w-full max-w-lg">
                     <div class="bg-white/95 p-6 rounded-3xl shadow-xl backdrop-blur-sm">
                         <div class="flex flex-col md:flex-row gap-3 mb-5">
-                            <input type="text" id="itemInput" placeholder="Írd be az elemet és nyomd meg az Enter-t..." class="flex-1 px-5 py-4 border-2 border-gray-200 rounded-full text-base outline-none transition-all duration-300 bg-white focus:border-purple-500 focus:ring-4 focus:ring-purple-100">
-                            <button id="addBtn" class="bg-purple-500 text-white border-none px-5 py-4 rounded-full cursor-pointer text-base transition-all duration-300 min-w-[50px] hover:bg-purple-600 hover:-translate-y-1">
+                            <input type="text" id="itemInputMobile" placeholder="Írd be az elemet és nyomd meg az Enter-t..." class="flex-1 px-5 py-4 border-2 border-gray-200 rounded-full text-base outline-none transition-all duration-300 bg-white focus:border-purple-500 focus:ring-4 focus:ring-purple-100">
+                            <button id="addBtnMobile" class="bg-purple-500 text-white border-none px-5 py-4 rounded-full cursor-pointer text-base transition-all duration-300 min-w-[50px] hover:bg-purple-600 hover:-translate-y-1">
                                 <i class="fas fa-plus"></i>
                             </button>
                         </div>
                         <div class="flex justify-between items-center mb-3">
-                            <span class="text-gray-600 text-sm">Elemek: <span id="itemCount" class="font-semibold">0</span></span>
-                            <button id="clearAllBtn" class="bg-red-500 text-white px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 hover:bg-red-600 hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed">
+                            <span class="text-gray-600 text-sm">Elemek: <span id="itemCountMobile" class="font-semibold">0</span></span>
+                            <button id="clearAllBtnMobile" class="bg-red-500 text-white px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 hover:bg-red-600 hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed">
                                 <i class="fas fa-trash"></i> Összes törlése
                             </button>
                         </div>
-                        <div id="itemsList" class="flex flex-wrap gap-3 min-h-[40px]">
-                            <!-- Items will be displayed here -->
+                        <div id="itemsListMobile" class="flex flex-wrap gap-3 min-h-[40px]">
+                            <!-- Mobile items will be displayed here -->
                         </div>
                     </div>
-                    
-                    <div class="text-center">
-                        <button id="spinBtn" class="bg-gradient-to-r from-red-400 to-orange-500 text-white border-none px-10 py-5 rounded-full text-xl font-semibold cursor-pointer transition-all duration-300 shadow-lg inline-flex items-center gap-3 mb-4 hover:-translate-y-1 hover:shadow-xl disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none">
-                            <i class="fas fa-play"></i> Pörgetés
-                        </button>
-                        <p class="text-white/80 text-sm">Vagy nyomd meg a Space-t / Enter-t</p>
-                    </div>
+                </div>
+                
+                <!-- Spin button (Desktop) -->
+                <div class="hidden lg:block text-center">
+                    <button id="spinBtn" class="bg-gradient-to-r from-red-400 to-orange-500 text-white border-none px-10 py-5 rounded-full text-xl font-semibold cursor-pointer transition-all duration-300 shadow-lg inline-flex items-center gap-3 mb-4 hover:-translate-y-1 hover:shadow-xl disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none">
+                        <i class="fas fa-play"></i> Pörgetés
+                    </button>
+                    <p class="text-white/80 text-sm">Vagy nyomd meg a Space-t / Enter-t</p>
                 </div>
             </div>
+        </main>
 
             <div id="winner" class="fixed left-5 top-1/2 -translate-y-1/2 bg-white p-6 rounded-2xl text-center shadow-2xl animate-winner-pop z-50 hidden max-w-[300px]">
                 <h2 class="text-red-400 text-xl md:text-2xl mb-3 animate-winner-blink">🎉 Nyertes! 🎉</h2>
@@ -131,41 +175,149 @@
         </main>
     </div>
 
-    <!-- Statistics Modal -->
+    <!-- Statistics Dashboard Modal -->
     <div id="statsModal" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 animate-fade-in hidden">
-        <div class="bg-white rounded-3xl max-w-[90%] max-h-[90%] overflow-y-auto shadow-2xl animate-modal-slide">
-            <div class="flex justify-between items-center p-6 md:p-8 border-b-2 border-gray-100">
-                <h2 class="text-gray-800 text-xl md:text-2xl flex items-center gap-3">
-                    <i class="fas fa-chart-bar"></i> Statisztikák
-                </h2>
-                <button id="closeStats" class="bg-none border-none text-2xl cursor-pointer text-gray-600 transition-colors duration-300 hover:text-red-400">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="p-6 md:p-8">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
-                    <div class="bg-gradient-to-br from-purple-500 to-purple-700 text-white p-6 rounded-2xl text-center shadow-lg">
-                        <h3 class="text-base mb-3 opacity-90">Összes pörgetés</h3>
-                        <p id="totalSpins" class="text-3xl font-bold">0</p>
+        <div class="bg-white rounded-3xl w-[95%] max-w-7xl h-[90vh] overflow-hidden shadow-2xl animate-modal-slide">
+            <!-- Dashboard Header -->
+            <div class="bg-gradient-to-r from-purple-600 to-blue-600 text-white p-6 flex justify-between items-center">
+                <div class="flex items-center gap-4">
+                    <div class="bg-white/20 p-3 rounded-full">
+                        <i class="fas fa-chart-line text-2xl"></i>
                     </div>
-                    <div class="bg-gradient-to-br from-purple-500 to-purple-700 text-white p-6 rounded-2xl text-center shadow-lg">
-                        <h3 class="text-base mb-3 opacity-90">Egyedi elemek</h3>
-                        <p id="uniqueItems" class="text-3xl font-bold">0</p>
-                    </div>
-                    <div class="bg-gradient-to-br from-purple-500 to-purple-700 text-white p-6 rounded-2xl text-center shadow-lg">
-                        <h3 class="text-base mb-3 opacity-90">Leggyakoribb</h3>
-                        <p id="mostFrequent" class="text-3xl font-bold">-</p>
-                    </div>
-                    <div class="bg-gradient-to-br from-purple-500 to-purple-700 text-white p-6 rounded-2xl text-center shadow-lg">
-                        <h3 class="text-base mb-3 opacity-90">Legritkább</h3>
-                        <p id="leastFrequent" class="text-3xl font-bold">-</p>
+                    <div>
+                        <h2 class="text-2xl font-bold">Statisztikai Dashboard</h2>
+                        <p class="text-white/80">Részletes elemzés és grafikonok</p>
                     </div>
                 </div>
-                
-                <div>
-                    <h3 class="text-gray-800 mb-5 text-lg md:text-xl">Részletes statisztikák</h3>
-                    <div id="detailedStats" class="flex flex-col gap-4">
-                        <!-- Detailed stats will be generated here -->
+                <div class="flex items-center gap-3">
+                    <button id="clearStatsBtn" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-full transition-all duration-300 hover:scale-105 flex items-center gap-2">
+                        <i class="fas fa-trash"></i>
+                        <span class="hidden sm:inline">Statisztikák törlése</span>
+                    </button>
+                    <button id="closeStats" class="bg-white/20 hover:bg-white/30 p-3 rounded-full transition-all duration-300 hover:scale-110">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Dashboard Content -->
+            <div class="p-6 h-full overflow-y-auto">
+                <!-- Key Metrics -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white p-6 rounded-2xl shadow-lg">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-blue-100 text-sm">Összes pörgetés</p>
+                                <p id="totalSpins" class="text-3xl font-bold">0</p>
+                            </div>
+                            <div class="bg-white/20 p-3 rounded-full">
+                                <i class="fas fa-sync-alt text-2xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-br from-green-500 to-green-600 text-white p-6 rounded-2xl shadow-lg">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-green-100 text-sm">Egyedi elemek</p>
+                                <p id="uniqueItems" class="text-3xl font-bold">0</p>
+                            </div>
+                            <div class="bg-white/20 p-3 rounded-full">
+                                <i class="fas fa-list text-2xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-br from-yellow-500 to-orange-500 text-white p-6 rounded-2xl shadow-lg">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-yellow-100 text-sm">Leggyakoribb</p>
+                                <p id="mostFrequent" class="text-lg font-bold truncate">-</p>
+                            </div>
+                            <div class="bg-white/20 p-3 rounded-full">
+                                <i class="fas fa-trophy text-2xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-br from-red-500 to-pink-500 text-white p-6 rounded-2xl shadow-lg">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-red-100 text-sm">Átlagos esély</p>
+                                <p id="averageChance" class="text-3xl font-bold">0%</p>
+                            </div>
+                            <div class="bg-white/20 p-3 rounded-full">
+                                <i class="fas fa-percentage text-2xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                    <!-- Pie Chart -->
+                    <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="bg-purple-100 p-2 rounded-lg">
+                                <i class="fas fa-chart-pie text-purple-600"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-800">Nyerési arányok</h3>
+                        </div>
+                        <div class="relative h-80">
+                            <canvas id="pieChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Bar Chart -->
+                    <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="bg-blue-100 p-2 rounded-lg">
+                                <i class="fas fa-chart-bar text-blue-600"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-800">Nyerések száma</h3>
+                        </div>
+                        <div class="relative h-80">
+                            <canvas id="barChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Timeline Chart -->
+                <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 mb-8">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="bg-green-100 p-2 rounded-lg">
+                            <i class="fas fa-chart-line text-green-600"></i>
+                        </div>
+                                                    <h3 class="text-xl font-bold text-gray-800">Legutóbbi nyertesek idővonalon</h3>
+                    </div>
+                    <div class="relative h-64">
+                        <canvas id="lineChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Detailed Stats Table -->
+                <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="bg-indigo-100 p-2 rounded-lg">
+                            <i class="fas fa-table text-indigo-600"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800">Részletes elemzés</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="border-b-2 border-gray-200">
+                                    <th class="text-left py-3 px-4 font-semibold text-gray-700">Kolléga</th>
+                                    <th class="text-center py-3 px-4 font-semibold text-gray-700">Összes</th>
+                                    <th class="text-center py-3 px-4 font-semibold text-gray-700">Ebben a hónapban</th>
+                                    <th class="text-center py-3 px-4 font-semibold text-gray-700">Ebben a héten</th>
+                                    <th class="text-center py-3 px-4 font-semibold text-gray-700">Utolsó nyerés</th>
+                                </tr>
+                            </thead>
+                            <tbody id="detailedStatsTable">
+                                <!-- Detailed stats will be generated here -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>

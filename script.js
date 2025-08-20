@@ -22,10 +22,15 @@ class WheelOfFortune {
         // Initialize DOM elements
         this.wheel = document.getElementById('wheel');
         this.itemInput = document.getElementById('itemInput');
+        this.itemInputMobile = document.getElementById('itemInputMobile');
         this.addBtn = document.getElementById('addBtn');
+        this.addBtnMobile = document.getElementById('addBtnMobile');
         this.itemsList = document.getElementById('itemsList');
+        this.itemsListMobile = document.getElementById('itemsListMobile');
         this.itemCount = document.getElementById('itemCount');
+        this.itemCountMobile = document.getElementById('itemCountMobile');
         this.clearAllBtn = document.getElementById('clearAllBtn');
+        this.clearAllBtnMobile = document.getElementById('clearAllBtnMobile');
         this.spinBtn = document.getElementById('spinBtn');
         this.winnerDisplay = document.getElementById('winner');
         this.winnerText = document.getElementById('winnerText');
@@ -38,7 +43,7 @@ class WheelOfFortune {
     }
 
     bindEvents() {
-        // Add item events
+        // Add item events (PC)
         this.itemInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 this.addItem();
@@ -49,14 +54,37 @@ class WheelOfFortune {
             this.addItem();
         });
 
+        // Add item events (Mobile)
+        this.itemInputMobile.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                this.addItemMobile();
+            }
+        });
+
+        this.addBtnMobile.addEventListener('click', () => {
+            this.addItemMobile();
+        });
+
         // Clear all button
         this.clearAllBtn.addEventListener('click', () => {
+            this.clearAllItems();
+        });
+
+        // Mobile clear all button
+        this.clearAllBtnMobile.addEventListener('click', () => {
             this.clearAllItems();
         });
 
         // Spin events
         this.spinBtn.addEventListener('click', () => {
             this.spinWheel();
+        });
+
+        // Wheel click events
+        this.wheel.addEventListener('click', () => {
+            if (!this.isSpinning && this.items.length > 0) {
+                this.spinWheel();
+            }
         });
 
         document.addEventListener('keydown', (e) => {
@@ -84,6 +112,12 @@ class WheelOfFortune {
             this.hideStatistics();
         });
 
+        // Clear statistics button
+        this.clearStatsBtn = document.getElementById('clearStatsBtn');
+        this.clearStatsBtn.addEventListener('click', () => {
+            this.clearStatistics();
+        });
+
         this.statsModal.addEventListener('click', (e) => {
             if (e.target === this.statsModal) {
                 this.hideStatistics();
@@ -108,6 +142,17 @@ class WheelOfFortune {
         if (item && !this.items.includes(item)) {
             this.items.push(item);
             this.itemInput.value = '';
+            this.updateWheel();
+            this.updateItemsList();
+            this.saveStatistics();
+        }
+    }
+
+    addItemMobile() {
+        const item = this.itemInputMobile.value.trim();
+        if (item && !this.items.includes(item)) {
+            this.items.push(item);
+            this.itemInputMobile.value = '';
             this.updateWheel();
             this.updateItemsList();
             this.saveStatistics();
@@ -221,16 +266,19 @@ class WheelOfFortune {
     }
 
     updateItemsList() {
+        // Clear both lists
         this.itemsList.innerHTML = '';
+        this.itemsListMobile.innerHTML = '';
         
-        // Update item count
+        // Update item counts
         this.itemCount.textContent = this.items.length.toString();
+        this.itemCountMobile.textContent = this.items.length.toString();
         
-        // Update clear all button state
+        // Update clear all button states
         this.clearAllBtn.disabled = this.items.length === 0;
+        this.clearAllBtnMobile.disabled = this.items.length === 0;
         
         this.items.forEach((item, index) => {
-            const itemTag = document.createElement('div');
             const color = this.colors[index % this.colors.length];
             
             // Convert hex color to RGB for better text contrast calculation
@@ -242,17 +290,33 @@ class WheelOfFortune {
             const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
             const textColor = luminance > 0.5 ? '#000000' : '#ffffff';
             
-            itemTag.className = 'px-4 py-2 rounded-full text-sm flex items-center gap-2 animate-slide-in shadow-lg font-semibold';
-            itemTag.style.backgroundColor = color;
-            itemTag.style.color = textColor;
+            // Create PC version (vertical list)
+            const itemTagPC = document.createElement('div');
+            itemTagPC.className = 'px-4 py-2 rounded-full text-sm flex items-center justify-between animate-slide-in shadow-lg font-semibold';
+            itemTagPC.style.backgroundColor = color;
+            itemTagPC.style.color = textColor;
             
-            itemTag.innerHTML = `
+            itemTagPC.innerHTML = `
                 <span>${item}</span>
                 <button class="bg-white/30 border-none w-5 h-5 rounded-full cursor-pointer flex items-center justify-center text-xs transition-all duration-300 hover:bg-white/50 hover:scale-110" onclick="wheelApp.removeItem('${item}')" style="color: ${textColor};">
                     <i class="fas fa-times"></i>
                 </button>
             `;
-            this.itemsList.appendChild(itemTag);
+            this.itemsList.appendChild(itemTagPC);
+            
+            // Create mobile version (horizontal wrap)
+            const itemTagMobile = document.createElement('div');
+            itemTagMobile.className = 'px-4 py-2 rounded-full text-sm flex items-center gap-2 animate-slide-in shadow-lg font-semibold';
+            itemTagMobile.style.backgroundColor = color;
+            itemTagMobile.style.color = textColor;
+            
+            itemTagMobile.innerHTML = `
+                <span>${item}</span>
+                <button class="bg-white/30 border-none w-5 h-5 rounded-full cursor-pointer flex items-center justify-center text-xs transition-all duration-300 hover:bg-white/50 hover:scale-110" onclick="wheelApp.removeItem('${item}')" style="color: ${textColor};">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            this.itemsListMobile.appendChild(itemTagMobile);
         });
     }
 
@@ -365,11 +429,22 @@ class WheelOfFortune {
         if (!this.statistics.itemStats[winner]) {
             this.statistics.itemStats[winner] = {
                 wins: 0,
-                percentage: 0
+                percentage: 0,
+                lastWin: null,
+                winsThisMonth: 0,
+                winsThisWeek: 0,
+                winsThisYear: 0
             };
         }
         
         this.statistics.itemStats[winner].wins++;
+        
+        // Update last win date
+        const now = new Date();
+        this.statistics.itemStats[winner].lastWin = now.toISOString();
+        
+        // Update time-based statistics
+        this.updateTimeBasedStats(winner, now);
         
         // Update percentages
         Object.keys(this.statistics.itemStats).forEach(item => {
@@ -379,11 +454,50 @@ class WheelOfFortune {
         
         this.statistics.spinHistory.push({
             winner: winner,
-            timestamp: new Date().toISOString(),
-            totalItems: this.items.length
+            date: now.toISOString(),
+            timestamp: now.getTime()
         });
         
         this.saveStatistics();
+    }
+
+    updateTimeBasedStats(winner, date) {
+        const currentYear = date.getFullYear();
+        const currentMonth = date.getMonth();
+        const currentWeek = this.getWeekNumber(date);
+        
+        // Reset time-based stats for all items
+        Object.keys(this.statistics.itemStats).forEach(item => {
+            if (!this.statistics.itemStats[item].winsThisMonth) this.statistics.itemStats[item].winsThisMonth = 0;
+            if (!this.statistics.itemStats[item].winsThisWeek) this.statistics.itemStats[item].winsThisWeek = 0;
+            if (!this.statistics.itemStats[item].winsThisYear) this.statistics.itemStats[item].winsThisYear = 0;
+        });
+        
+        // Recalculate time-based stats
+        this.statistics.spinHistory.forEach(spin => {
+            const spinDate = new Date(spin.date);
+            const spinYear = spinDate.getFullYear();
+            const spinMonth = spinDate.getMonth();
+            const spinWeek = this.getWeekNumber(spinDate);
+            
+            if (spin.winner === winner) {
+                if (spinYear === currentYear) {
+                    this.statistics.itemStats[winner].winsThisYear++;
+                    if (spinMonth === currentMonth) {
+                        this.statistics.itemStats[winner].winsThisMonth++;
+                        if (spinWeek === currentWeek) {
+                            this.statistics.itemStats[winner].winsThisWeek++;
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    getWeekNumber(date) {
+        const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
+        const pastDaysOfYear = (date - firstDayOfYear) / 86400000;
+        return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
     }
 
     showStatistics() {
@@ -393,6 +507,40 @@ class WheelOfFortune {
 
     hideStatistics() {
         this.statsModal.classList.add('hidden');
+    }
+
+    clearStatistics() {
+        if (confirm('Biztosan törölni szeretnéd az összes statisztikát? Ez a művelet nem vonható vissza!')) {
+            // Reset statistics
+            this.statistics = {
+                totalSpins: 0,
+                itemStats: {},
+                spinHistory: []
+            };
+            
+            // Save to localStorage
+            this.saveStatistics();
+            
+            // Update display
+            this.updateStatisticsDisplay();
+            
+            // Show confirmation
+            this.showClearConfirmation();
+        }
+    }
+
+    showClearConfirmation() {
+        // Create a temporary confirmation message
+        const confirmation = document.createElement('div');
+        confirmation.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-full shadow-lg z-50 animate-bounce';
+        confirmation.innerHTML = '<i class="fas fa-check mr-2"></i>Statisztikák törölve!';
+        
+        document.body.appendChild(confirmation);
+        
+        // Remove after 3 seconds
+        setTimeout(() => {
+            confirmation.remove();
+        }, 3000);
     }
 
     updateStatisticsDisplay() {
@@ -405,34 +553,231 @@ class WheelOfFortune {
             .sort((a, b) => b[1].wins - a[1].wins);
         
         if (sortedStats.length > 0) {
-            document.getElementById('mostFrequent').textContent = `${sortedStats[0][0]} (${sortedStats[0][1].wins}x)`;
-            document.getElementById('leastFrequent').textContent = `${sortedStats[sortedStats.length - 1][0]} (${sortedStats[sortedStats.length - 1][1].wins}x)`;
+            document.getElementById('mostFrequent').textContent = sortedStats[0][0];
+            
+            // Calculate average chance
+            const averageChance = this.items.length > 0 ? (100 / this.items.length).toFixed(1) : 0;
+            document.getElementById('averageChance').textContent = `${averageChance}%`;
+        } else {
+            document.getElementById('averageChance').textContent = '0%';
         }
         
-        // Update detailed stats
-        const detailedStats = document.getElementById('detailedStats');
-        detailedStats.innerHTML = '';
+        // Update detailed stats table
+        const detailedStatsTable = document.getElementById('detailedStatsTable');
+        detailedStatsTable.innerHTML = '';
         
         if (this.statistics.totalSpins === 0) {
-            detailedStats.innerHTML = '<p class="text-center text-gray-600 py-5">Még nincs pörgetés!</p>';
-            return;
+            detailedStatsTable.innerHTML = '<tr><td colspan="5" class="text-center text-gray-600 py-8">Még nincs pörgetés!</td></tr>';
+        } else {
+            sortedStats.forEach(([item, stats]) => {
+                // Format last win date
+                let lastWinText = 'Még nem nyert';
+                let lastWinColor = 'text-gray-500';
+                
+                if (stats.lastWin) {
+                    const lastWinDate = new Date(stats.lastWin);
+                    const now = new Date();
+                    const diffTime = now - lastWinDate;
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    
+                    if (diffDays === 0) {
+                        lastWinText = 'Ma';
+                        lastWinColor = 'text-red-600 font-bold';
+                    } else if (diffDays === 1) {
+                        lastWinText = 'Tegnap';
+                        lastWinColor = 'text-orange-600 font-semibold';
+                    } else if (diffDays <= 7) {
+                        lastWinText = `${diffDays} napja`;
+                        lastWinColor = 'text-yellow-600';
+                    } else {
+                        lastWinText = lastWinDate.toLocaleDateString('hu-HU');
+                        lastWinColor = 'text-green-600';
+                    }
+                }
+
+                const row = document.createElement('tr');
+                row.className = 'border-b border-gray-100 hover:bg-gray-50';
+                row.innerHTML = `
+                    <td class="py-4 px-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-4 h-4 rounded-full" style="background-color: ${this.colors[this.items.indexOf(item) % this.colors.length]}"></div>
+                            <span class="font-medium">${item}</span>
+                        </div>
+                    </td>
+                    <td class="py-4 px-4 text-center font-semibold">${stats.wins}</td>
+                    <td class="py-4 px-4 text-center">
+                        <span class="px-2 py-1 rounded-full text-xs font-medium ${stats.winsThisMonth > 0 ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-600'}">
+                            ${stats.winsThisMonth || 0}
+                        </span>
+                    </td>
+                    <td class="py-4 px-4 text-center">
+                        <span class="px-2 py-1 rounded-full text-xs font-medium ${stats.winsThisWeek > 0 ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-600'}">
+                            ${stats.winsThisWeek || 0}
+                        </span>
+                    </td>
+                    <td class="py-4 px-4 text-center ${lastWinColor} font-medium">${lastWinText}</td>
+                `;
+                detailedStatsTable.appendChild(row);
+            });
         }
+
+        // Create charts
+        this.createCharts();
+    }
+
+    createCharts() {
+        // Destroy existing charts
+        if (this.pieChart) this.pieChart.destroy();
+        if (this.barChart) this.barChart.destroy();
+        if (this.lineChart) this.lineChart.destroy();
+
+        const sortedStats = Object.entries(this.statistics.itemStats)
+            .sort((a, b) => b[1].wins - a[1].wins);
+
+        if (sortedStats.length === 0) return;
+
+        // Pie Chart - Win Distribution
+        const pieCtx = document.getElementById('pieChart').getContext('2d');
+        this.pieChart = new Chart(pieCtx, {
+            type: 'doughnut',
+            data: {
+                labels: sortedStats.map(([item]) => item),
+                datasets: [{
+                    data: sortedStats.map(([, stats]) => stats.wins),
+                    backgroundColor: sortedStats.map(([item]) => 
+                        this.colors[this.items.indexOf(item) % this.colors.length]
+                    ),
+                    borderWidth: 3,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { usePointStyle: true, padding: 20 }
+                    }
+                }
+            }
+        });
+
+        // Bar Chart - Win Counts
+        const barCtx = document.getElementById('barChart').getContext('2d');
+        this.barChart = new Chart(barCtx, {
+            type: 'bar',
+            data: {
+                labels: sortedStats.map(([item]) => item),
+                datasets: [{
+                    label: 'Nyerések száma',
+                    data: sortedStats.map(([, stats]) => stats.wins),
+                    backgroundColor: sortedStats.map(([item]) => 
+                        this.colors[this.items.indexOf(item) % this.colors.length] + '80'
+                    ),
+                    borderColor: sortedStats.map(([item]) => 
+                        this.colors[this.items.indexOf(item) % this.colors.length]
+                    ),
+                    borderWidth: 2,
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { stepSize: 1 }
+                    }
+                }
+            }
+        });
+
+        // Line Chart - Recent Winners Timeline
+        const lineCtx = document.getElementById('lineChart').getContext('2d');
+        const recentSpins = this.statistics.spinHistory.slice(-10); // Last 10 spins
         
-        sortedStats.forEach(([item, stats]) => {
-            const statItem = document.createElement('div');
-            statItem.className = 'bg-gray-50 p-5 rounded-xl border-l-4 border-purple-500 flex flex-col md:flex-row justify-between items-start md:items-center gap-3';
-            statItem.innerHTML = `
-                <div class="flex-1 min-w-[200px]">
-                    <div class="font-semibold text-gray-800 mb-1">${item}</div>
-                    <div class="text-sm text-gray-600">
-                        ${stats.wins} nyerés • ${stats.percentage}% esély
-                    </div>
-                </div>
-                <div class="bg-purple-500 text-white px-4 py-2 rounded-full font-semibold text-sm self-end md:self-auto">
-                    ${stats.percentage}%
-                </div>
-            `;
-            detailedStats.appendChild(statItem);
+        // Create timeline data
+        const timelineData = recentSpins.map((spin, index) => {
+            const date = new Date(spin.date);
+            return {
+                x: date,
+                y: index + 1,
+                winner: spin.winner
+            };
+        });
+        
+        this.lineChart = new Chart(lineCtx, {
+            type: 'scatter',
+            data: {
+                datasets: [{
+                    label: 'Legutóbbi nyertesek',
+                    data: timelineData,
+                    backgroundColor: timelineData.map(point => 
+                        this.colors[this.items.indexOf(point.winner) % this.colors.length]
+                    ),
+                    borderColor: timelineData.map(point => 
+                        this.colors[this.items.indexOf(point.winner) % this.colors.length]
+                    ),
+                    borderWidth: 2,
+                    pointRadius: 8,
+                    pointHoverRadius: 12
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            title: function(context) {
+                                const date = new Date(context[0].parsed.x);
+                                return date.toLocaleDateString('hu-HU', {
+                                    weekday: 'long',
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                });
+                            },
+                            label: function(context) {
+                                return `Nyertes: ${context[0].raw.winner}`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        type: 'time',
+                        time: {
+                            unit: 'day',
+                            displayFormats: {
+                                day: 'MMM dd'
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Dátum'
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Pörgetés sorszáma'
+                        },
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
         });
     }
 
