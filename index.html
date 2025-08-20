@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Szerencsekerék</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'poppins': ['Poppins', 'sans-serif'],
+                    },
+                    animation: {
+                        'winner-glow': 'winnerGlow 1s ease-in-out infinite alternate',
+                        'winner-pop': 'winnerPop 0.6s ease',
+                        'winner-blink': 'winnerBlink 1s infinite',
+                        'winner-jump': 'winnerJump 0.5s ease infinite alternate',
+                        'slide-in': 'slideIn 0.3s ease',
+                        'shake': 'shake 0.5s ease-in-out',
+                        'fade-in': 'fadeIn 0.5s ease',
+                        'modal-slide': 'modalSlide 0.4s ease'
+                    },
+                    keyframes: {
+                        winnerGlow: {
+                            '0%': { filter: 'drop-shadow(0 0 15px rgba(255, 255, 255, 0.8)) brightness(1.2)' },
+                            '100%': { filter: 'drop-shadow(0 0 25px rgba(255, 255, 255, 1)) brightness(1.4)' }
+                        },
+                        winnerPop: {
+                            '0%': { transform: 'scale(0.5)', opacity: '0' },
+                            '50%': { transform: 'scale(1.1)' },
+                            '100%': { transform: 'scale(1)', opacity: '1' }
+                        },
+                        winnerBlink: {
+                            '0%, 50%': { opacity: '1' },
+                            '25%, 75%': { opacity: '0.7' }
+                        },
+                        winnerJump: {
+                            'from': { transform: 'translateY(0)' },
+                            'to': { transform: 'translateY(-5px)' }
+                        },
+                        slideIn: {
+                            'from': { opacity: '0', transform: 'translateY(-10px)' },
+                            'to': { opacity: '1', transform: 'translateY(0)' }
+                        },
+                        shake: {
+                            '0%, 100%': { transform: 'translateX(0)' },
+                            '10%, 30%, 50%, 70%, 90%': { transform: 'translateX(-5px)' },
+                            '20%, 40%, 60%, 80%': { transform: 'translateX(5px)' }
+                        },
+                        fadeIn: {
+                            'from': { opacity: '0' },
+                            'to': { opacity: '1' }
+                        },
+                        modalSlide: {
+                            'from': { transform: 'translateY(-50px)', opacity: '0' },
+                            'to': { transform: 'translateY(0)', opacity: '1' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .wheel-segment {
+            transition: all 0.3s ease;
+        }
+        .wheel-segment.winning-segment {
+            animation: winnerGlow 1s ease-in-out infinite alternate;
+        }
+    </style>
+</head>
+<body class="font-poppins bg-gradient-to-br from-purple-600 via-purple-700 to-purple-800 min-h-screen text-gray-800 overflow-x-hidden">
+    <div class="max-w-6xl mx-auto px-5 min-h-screen flex flex-col">
+        <header class="flex flex-col md:flex-row justify-between items-center mb-8 gap-5">
+            <h1 class="text-white text-3xl md:text-4xl font-bold text-shadow-lg flex items-center gap-4">
+                <i class="fas fa-dice"></i> Szerencsekerék
+            </h1>
+            <button id="statsBtn" class="bg-white/20 border-2 border-white/30 text-white px-6 py-3 rounded-full cursor-pointer font-semibold transition-all duration-300 backdrop-blur-sm flex items-center gap-2 hover:bg-white/30 hover:-translate-y-1 hover:shadow-lg">
+                <i class="fas fa-chart-bar"></i> Statisztikák
+            </button>
+        </header>
+
+        <main class="flex-1 flex flex-col items-center gap-8">
+            <div class="flex flex-col items-center gap-10 w-full max-w-4xl">
+                <div class="relative flex justify-center items-center">
+                    <div id="wheel" class="w-96 h-96 md:w-[500px] md:h-[500px] rounded-full relative shadow-2xl border-8 border-white overflow-hidden">
+                        <!-- Wheel segments will be generated here -->
+                    </div>
+                    <div class="absolute -right-5 top-1/2 -translate-y-1/2 bg-red-500 text-white w-10 h-10 rounded-full flex items-center justify-center text-xl shadow-lg z-10">
+                        <i class="fas fa-arrow-right"></i>
+                        <div class="absolute -left-3 top-1/2 -translate-y-1/2 w-0 h-0 border-t-[10px] border-t-transparent border-b-[10px] border-b-transparent border-r-[15px] border-r-red-500"></div>
+                    </div>
+                </div>
+                
+                <div class="flex flex-col gap-8 w-full max-w-lg">
+                    <div class="bg-white/95 p-6 rounded-3xl shadow-xl backdrop-blur-sm">
+                        <div class="flex flex-col md:flex-row gap-3 mb-5">
+                            <input type="text" id="itemInput" placeholder="Írd be az elemet és nyomd meg az Enter-t..." class="flex-1 px-5 py-4 border-2 border-gray-200 rounded-full text-base outline-none transition-all duration-300 bg-white focus:border-purple-500 focus:ring-4 focus:ring-purple-100">
+                            <button id="addBtn" class="bg-purple-500 text-white border-none px-5 py-4 rounded-full cursor-pointer text-base transition-all duration-300 min-w-[50px] hover:bg-purple-600 hover:-translate-y-1">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-gray-600 text-sm">Elemek: <span id="itemCount" class="font-semibold">0</span></span>
+                            <button id="clearAllBtn" class="bg-red-500 text-white px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 hover:bg-red-600 hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed">
+                                <i class="fas fa-trash"></i> Összes törlése
+                            </button>
+                        </div>
+                        <div id="itemsList" class="flex flex-wrap gap-3 min-h-[40px]">
+                            <!-- Items will be displayed here -->
+                        </div>
+                    </div>
+                    
+                    <div class="text-center">
+                        <button id="spinBtn" class="bg-gradient-to-r from-red-400 to-orange-500 text-white border-none px-10 py-5 rounded-full text-xl font-semibold cursor-pointer transition-all duration-300 shadow-lg inline-flex items-center gap-3 mb-4 hover:-translate-y-1 hover:shadow-xl disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none">
+                            <i class="fas fa-play"></i> Pörgetés
+                        </button>
+                        <p class="text-white/80 text-sm">Vagy nyomd meg a Space-t / Enter-t</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="winner" class="fixed left-5 top-1/2 -translate-y-1/2 bg-white p-6 rounded-2xl text-center shadow-2xl animate-winner-pop z-50 hidden max-w-[300px]">
+                <h2 class="text-red-400 text-xl md:text-2xl mb-3 animate-winner-blink">🎉 Nyertes! 🎉</h2>
+                <p id="winnerText" class="text-lg md:text-xl font-semibold text-gray-800 animate-winner-jump"></p>
+            </div>
+        </main>
+    </div>
+
+    <!-- Statistics Modal -->
+    <div id="statsModal" class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 animate-fade-in hidden">
+        <div class="bg-white rounded-3xl max-w-[90%] max-h-[90%] overflow-y-auto shadow-2xl animate-modal-slide">
+            <div class="flex justify-between items-center p-6 md:p-8 border-b-2 border-gray-100">
+                <h2 class="text-gray-800 text-xl md:text-2xl flex items-center gap-3">
+                    <i class="fas fa-chart-bar"></i> Statisztikák
+                </h2>
+                <button id="closeStats" class="bg-none border-none text-2xl cursor-pointer text-gray-600 transition-colors duration-300 hover:text-red-400">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="p-6 md:p-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+                    <div class="bg-gradient-to-br from-purple-500 to-purple-700 text-white p-6 rounded-2xl text-center shadow-lg">
+                        <h3 class="text-base mb-3 opacity-90">Összes pörgetés</h3>
+                        <p id="totalSpins" class="text-3xl font-bold">0</p>
+                    </div>
+                    <div class="bg-gradient-to-br from-purple-500 to-purple-700 text-white p-6 rounded-2xl text-center shadow-lg">
+                        <h3 class="text-base mb-3 opacity-90">Egyedi elemek</h3>
+                        <p id="uniqueItems" class="text-3xl font-bold">0</p>
+                    </div>
+                    <div class="bg-gradient-to-br from-purple-500 to-purple-700 text-white p-6 rounded-2xl text-center shadow-lg">
+                        <h3 class="text-base mb-3 opacity-90">Leggyakoribb</h3>
+                        <p id="mostFrequent" class="text-3xl font-bold">-</p>
+                    </div>
+                    <div class="bg-gradient-to-br from-purple-500 to-purple-700 text-white p-6 rounded-2xl text-center shadow-lg">
+                        <h3 class="text-base mb-3 opacity-90">Legritkább</h3>
+                        <p id="leastFrequent" class="text-3xl font-bold">-</p>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="text-gray-800 mb-5 text-lg md:text-xl">Részletes statisztikák</h3>
+                    <div id="detailedStats" class="flex flex-col gap-4">
+                        <!-- Detailed stats will be generated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

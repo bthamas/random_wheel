@@ -1,0 +1,33 @@
+{
+  "name": "random-wheel",
+  "version": "1.0.0",
+  "description": "A modern, mobile-friendly wheel of fortune web application with statistics and beautiful animations",
+  "main": "index.html",
+  "scripts": {
+    "start": "python -m http.server 8000",
+    "dev": "python -m http.server 8000",
+    "serve": "python -m http.server 8000"
+  },
+  "keywords": [
+    "wheel-of-fortune",
+    "random",
+    "game",
+    "javascript",
+    "tailwind",
+    "mobile-friendly",
+    "statistics",
+    "animations"
+  ],
+  "author": "Modern Web Technologies",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/Random_wheel.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/Random_wheel/issues"
+  },
+  "homepage": "https://github.com/yourusername/Random_wheel#readme",
+  "devDependencies": {},
+  "dependencies": {}
+}
