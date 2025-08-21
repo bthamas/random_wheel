@@ -1,154 +1,150 @@
-# 🎡 Random Wheel
+# Szerencsekerék - Wheel of Fortune
 
 A modern, mobile-friendly wheel of fortune web application with statistics and beautiful animations.
 
-![Random Wheel Demo](https://img.shields.io/badge/Status-Ready-brightgreen) ![License](https://img.shields.io/badge/License-MIT-blue) ![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-yellow) ![Tailwind](https://img.shields.io/badge/Tailwind-CSS-38B2AC)
+## 🚀 Features
 
-## ✨ Features
+### Core Functionality
+- **Interactive Wheel**: Beautiful spinning wheel with customizable items
+- **Statistics Dashboard**: Comprehensive tracking of spins, wins, and trends
+- **Multiple Themes**: 12 unique visual themes including 2 completely different layouts
+- **Mobile Optimized**: Touch-friendly interface with shake-to-spin functionality
+- **Responsive Design**: Works perfectly on all device sizes
 
-### 🎯 Core Functionality
-- **Dynamic wheel** that can hold any number of items
-- **Fair random spinning** with 0.5-1.5 second duration
-- **Beautiful animations** with smooth transitions
-- **Winner display** with blinking and jumping effects
+### New Layout Themes (Completely Different Designs)
+1. **Hexagonal Grid Theme**: Geometric hexagonal design with dark blue aesthetic
+2. **Vertical Timeline Theme**: Vertical layout with timeline-style presentation
 
-### 📱 Mobile Support
-- **Fully responsive design** that works on all devices
-- **Touch controls**: Tap, swipe, and shake to spin
-- **Mobile-optimized UI** with larger touch targets
-- **Shake detection** for phone shaking to trigger spin
+### Performance Improvements
+- **DOM Caching**: Optimized DOM element access for better performance
+- **Event Delegation**: Efficient event handling for theme selection
+- **CSS Optimizations**: Hardware acceleration and reduced motion support
+- **Error Handling**: Comprehensive error boundaries and fallbacks
 
-### 📊 Statistics Dashboard
-- **Comprehensive tracking** of all spins and winners
-- **Percentage calculations** for each item's win rate
-- **Most/least frequent** winners tracking
-- **Detailed analytics** with win counts and odds
-- **Persistent storage** using localStorage
+### Accessibility & Readability
+- **Improved Contrast**: Better text readability across all themes
+- **Reduced Motion**: Respects user's motion preferences
+- **Keyboard Navigation**: Full keyboard support (Space/Enter to spin)
+- **Touch Gestures**: Swipe support for mobile devices
 
-### 🎨 Visual Design
-- **Modern gradient background** (purple to blue)
-- **Vibrant wheel segments** with different colors
-- **Color coordination** - item tags match wheel colors
-- **Smooth animations** throughout the interface
-- **Professional typography** using Poppins font
+## 🎨 Available Themes
 
-### 🎯 User Experience
-- **Easy item addition**: Just type and press Enter
-- **Multiple spin triggers**: Button, Space, Enter, swipe, shake
-- **Visual feedback** for all interactions
-- **Intuitive controls** that work on both desktop and mobile
+1. **Eredeti** - Classic purple design
+2. **Minimalista** - Clean, minimalist white design
+3. **3D Modern** - Modern 3D effects with blue gradients
+4. **Neon Cyberpunk** - Futuristic neon aesthetic
+5. **Nature Organic** - Natural green theme
+6. **Sunset Warm** - Warm orange/red sunset colors
+7. **Ocean Deep** - Deep blue ocean theme
+8. **Royal Purple** - Elegant royal purple
+9. **Retro Vintage** - Vintage retro aesthetic
+10. **Space Galaxy** - Cosmic space theme with stars
+11. **Candy Sweet** - Sweet pink candy theme
+12. **Hexagonal Grid** - Geometric hexagonal layout (NEW!)
+13. **Vertical Timeline** - Vertical timeline layout (NEW!)
 
-## 🚀 Quick Start
+## 🛠️ Technical Improvements
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/yourusername/Random_wheel.git
-   cd Random_wheel
-   ```
+### Bug Fixes
+- Fixed Python command compatibility (now uses `python3`)
+- Improved error handling throughout the application
+- Fixed theme readability issues
+- Added fallback elements for missing DOM components
 
-2. **Open in browser**
-   ```bash
-   # Using Python (if available)
-   python -m http.server 8000
-   
-   # Or simply open index.html in your browser
-   ```
+### Performance Enhancements
+- DOM element caching for faster access
+- Event delegation for theme selection
+- CSS hardware acceleration
+- Optimized animations with reduced motion support
+- Better memory management
 
-3. **Start using**
-   - Add items by typing and pressing Enter
-   - Spin the wheel using the button or keyboard shortcuts
-   - View statistics by clicking the "Statisztikák" button
+### Code Quality
+- Comprehensive error handling
+- Input validation and sanitization
+- Performance monitoring and optimization
+- Better separation of concerns
 
-## 🎮 How to Use
+## 🚀 Getting Started
 
-### Adding Items
-1. Type the item name in the input field
-2. Press **Enter** or click the **+** button
-3. Items appear as colored tags below
+### Prerequisites
+- Python 3.x
+- Modern web browser
 
-### Spinning the Wheel
-- **Desktop**: Click "Pörgetés" button, press **Space** or **Enter**
-- **Mobile**: 
-  - Tap the "Pörgetés" button
-  - Swipe left/right
-  - Shake your phone
+### Installation
+1. Clone the repository:
+```bash
+git clone https://github.com/bthamas.dev/Random_wheel.git
+cd Random_wheel
+```
 
-### Managing Items
-- **Remove individual**: Click the **X** on any item tag
-- **Remove all**: Click "Összes törlése" button
-- **View count**: See how many items are in the list
+2. Start the development server:
+```bash
+npm start
+# or
+python3 -m http.server 8000
+```
 
-### Statistics
-- Click **"Statisztikák"** button in the top right
-- View total spins, win percentages, and detailed analytics
-- Data persists between sessions
-
-## 🛠️ Technologies
-
-- **HTML5**: Semantic markup
-- **CSS3**: Modern styling with Tailwind CSS
-- **JavaScript (ES6+)**: Vanilla JS with classes
-- **SVG**: Precise wheel segments
-- **LocalStorage**: Persistent statistics
-- **Font Awesome**: Icons
-- **Google Fonts**: Poppins typography
+3. Open your browser and navigate to `http://localhost:8000`
 
 ## 📱 Mobile Features
 
-- **Touch Controls**: Tap, swipe, and shake gestures
-- **Responsive Design**: Adapts to all screen sizes
-- **Touch-Friendly**: Large buttons and touch targets
-- **Device Motion**: Shake to spin functionality
-- **Prevent Zoom**: Optimized for mobile viewing
+- **Touch Gestures**: Swipe left/right to spin
+- **Shake Detection**: Shake your device to spin the wheel
+- **Responsive Design**: Optimized for all screen sizes
+- **Touch Feedback**: Visual feedback for touch interactions
 
-## 🎨 Design Features
+## 🎯 Usage
 
-- **Color Coordination**: Item tags match wheel segment colors
-- **Smooth Animations**: Professional spinning and winner effects
-- **Modern UI**: Glassmorphism and gradient effects
-- **Accessibility**: High contrast and readable text
-- **Cross-Browser**: Works on all modern browsers
+1. **Add Items**: Type item names and press Enter or click the add button
+2. **Spin the Wheel**: Click the spin button, press Space/Enter, or shake your device
+3. **View Statistics**: Click the statistics button to see detailed analytics
+4. **Change Themes**: Click the settings button to choose from 12 different themes
+5. **Customize**: Add, remove, or clear items as needed
+
+## 🔧 Customization
+
+### Adding New Themes
+Themes are defined in `styles.css` and follow a consistent naming convention:
+```css
+.theme-your-theme-name {
+    /* Your theme styles */
+}
+```
+
+### Modifying Colors
+Update the color palette in `script.js`:
+```javascript
+this.colors = [
+    '#FF6B6B', '#4ECDC4', '#45B7D1', /* ... */
+];
+```
 
 ## 📊 Statistics Features
 
-- **Real-time Tracking**: Every spin is recorded
-- **Win Percentages**: Calculated automatically
-- **Trend Analysis**: Most and least frequent winners
-- **Persistent Data**: Saved in browser localStorage
-- **Detailed Reports**: Comprehensive analytics dashboard
+- **Total Spins**: Track overall usage
+- **Win Distribution**: See which items win most often
+- **Time-based Analysis**: Monthly, weekly, and yearly statistics
+- **Interactive Charts**: Pie charts and bar graphs
+- **Detailed History**: Complete spin history with timestamps
 
-## 🔧 Development
+## 🌟 Recent Updates
 
-### Project Structure
-```
-Random_wheel/
-├── index.html          # Main HTML file
-├── script.js           # JavaScript functionality
-├── script.ts           # TypeScript version (for reference)
-├── styles.css          # CSS styles (legacy)
-├── README.md           # Project documentation
-├── package.json        # Project metadata
-├── LICENSE             # MIT License
-├── .gitignore          # Git ignore rules
-└── GITHUB_SETUP.md     # GitHub setup guide
-```
-
-### Running Locally
-```bash
-# Simple HTTP server
-python -m http.server 8000
-
-# Or use any local server
-npx serve .
-```
+### Version 2.0 - Major Improvements
+- ✅ Added 2 completely different layout themes
+- ✅ Fixed all theme readability issues
+- ✅ Improved performance with DOM caching
+- ✅ Enhanced error handling and fallbacks
+- ✅ Better mobile optimization
+- ✅ Accessibility improvements
+- ✅ Performance optimizations
 
 ## 🤝 Contributing
 
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
 
 ## 📄 License
 
@@ -156,20 +152,14 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-- **Tailwind CSS** for the beautiful styling framework
-- **Font Awesome** for the icons
-- **Google Fonts** for the Poppins typography
-- **SVG** for precise wheel rendering
+- Built with modern web technologies
+- Optimized for performance and accessibility
+- Designed with user experience in mind
 
 ## 📞 Support
 
-If you have any questions or issues, please:
-1. Check the [Issues](https://github.com/yourusername/Random_wheel/issues) page
-2. Create a new issue if your problem isn't already listed
-3. Include details about your browser and device
+If you encounter any issues or have suggestions for improvements, please open an issue on GitHub.
 
 ---
 
-**Made with ❤️ for fair and fun random selection!**
-
-![Random Wheel](https://img.shields.io/badge/Random-Wheel-ff6b6b)
+**Made with ❤️ for better user experiences**

@@ -4,9 +4,11 @@
   "description": "A modern, mobile-friendly wheel of fortune web application with statistics and beautiful animations",
   "main": "index.html",
   "scripts": {
-    "start": "python -m http.server 8000",
-    "dev": "python -m http.server 8000",
-    "serve": "python -m http.server 8000"
+    "start": "python3 -m http.server 8000",
+    "dev": "python3 -m http.server 8000",
+    "serve": "python3 -m http.server 8000",
+    "build": "echo 'No build step required for static HTML app'",
+    "test": "echo 'No tests configured yet'"
   },
   "keywords": [
     "wheel-of-fortune",
@@ -22,12 +24,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/Random_wheel.git"
+    "url": "https://github.com/bthamas.dev/Random_wheel.git"
   },
   "bugs": {
-    "url": "https://github.com/yourusername/Random_wheel/issues"
+    "url": "https://github.com/bthamas.dev/Random_wheel/issues"
   },
-  "homepage": "https://github.com/yourusername/Random_wheel#readme",
+  "homepage": "https://github.com/bthamas.dev/Random_wheel#readme",
   "devDependencies": {},
   "dependencies": {}
 }
