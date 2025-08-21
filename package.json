@@ -24,12 +24,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/bthamas.dev/Random_wheel.git"
+    "url": "https://github.com/bthamas/random_wheel.git"
   },
   "bugs": {
-    "url": "https://github.com/bthamas.dev/Random_wheel/issues"
+    "url": "https://github.com/bthamas/random_wheel/issues"
   },
-  "homepage": "https://github.com/bthamas.dev/Random_wheel#readme",
+  "homepage": "https://github.com/bthamas/random_wheel#readme",
   "devDependencies": {},
   "dependencies": {}
 }
