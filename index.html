@@ -692,5 +692,32 @@
     </div>
 
     <script src="script.js"></script>
+    <script>
+        // Direct theme binding as fallback
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                console.log('Direct theme binding...');
+                document.querySelectorAll('.theme-card').forEach((card, index) => {
+                    card.addEventListener('click', () => {
+                        const theme = card.getAttribute('data-theme');
+                        console.log('Theme clicked:', theme, 'index:', index);
+                        if (theme) {
+                            // Remove all existing theme classes
+                            document.body.className = '';
+                            // Apply new theme
+                            document.body.classList.add(`theme-${theme}`);
+                            // Save theme preference
+                            localStorage.setItem('selectedTheme', theme);
+                            // Hide settings modal
+                            const settingsModal = document.getElementById('settingsModal');
+                            if (settingsModal) {
+                                settingsModal.classList.add('hidden');
+                            }
+                        }
+                    });
+                });
+            }, 500);
+        });
+    </script>
 </body>
 </html>

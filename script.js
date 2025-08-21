@@ -212,8 +212,7 @@ class WheelOfFortune {
             });
         }
 
-        // Theme selection events with performance optimization
-        this.bindThemeEvents();
+        // Theme selection events will be bound after DOM is fully loaded
 
         if (this.domElements.statsModal) {
             this.domElements.statsModal.addEventListener('click', (e) => {
@@ -228,19 +227,20 @@ class WheelOfFortune {
     }
 
     bindThemeEvents() {
-        // Performance optimization: Use event delegation for theme cards
-        const settingsContent = this.domElements.settingsModal?.querySelector('.p-6');
-        if (settingsContent) {
-            settingsContent.addEventListener('click', (e) => {
-                const themeCard = e.target.closest('.theme-card');
-                if (themeCard) {
-                    const theme = themeCard.getAttribute('data-theme');
-                    if (theme) {
-                        this.applyTheme(theme);
-                    }
+        // Direct event binding for theme cards - more reliable
+        console.log('Binding theme events...'); // Debug log
+        const themeCards = document.querySelectorAll('.theme-card');
+        console.log('Found theme cards:', themeCards.length); // Debug log
+        
+        themeCards.forEach((card, index) => {
+            card.addEventListener('click', () => {
+                const theme = card.getAttribute('data-theme');
+                console.log('Theme card clicked:', theme, 'at index:', index); // Debug log
+                if (theme) {
+                    this.applyTheme(theme);
                 }
             });
-        }
+        });
     }
 
     addSampleItems() {
@@ -1097,6 +1097,13 @@ class WheelOfFortune {
 document.addEventListener('DOMContentLoaded', () => {
     try {
         window.wheelApp = new WheelOfFortune();
+        
+        // Ensure theme events are bound after full initialization
+        setTimeout(() => {
+            if (window.wheelApp) {
+                window.wheelApp.bindThemeEvents();
+            }
+        }, 200);
     } catch (error) {
         console.error('Error initializing Wheel of Fortune app:', error);
         // Show user-friendly error message
