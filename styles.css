@@ -200,7 +200,7 @@
 }
 
 .theme-candy-sweet .wheel-segment {
-    filter: drop-shadow(0 3px 6px rgba(236, 72, 153, 0.3));
+    filter: drop-shadow(0 2px 4px rgba(236, 72, 153, 0.3));
 }
 
 /* 11. COMPLETELY DIFFERENT LAYOUT: Hexagonal Grid Theme */
@@ -512,6 +512,144 @@
 .theme-hexagonal-grid .text-gray-600,
 .theme-hexagonal-grid .text-gray-800 {
     color: #cbd5e1 !important;
+}
+
+/* CRITICAL: Improved wheel segment text readability - Clean version */
+.wheel-segment text {
+    font-weight: 700 !important;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7) !important;
+}
+
+/* Enhanced contrast for light-colored segments - Subtle improvement */
+.wheel-segment[fill*="FFEAA7"] text,
+.wheel-segment[fill*="96CEB4"] text,
+.wheel-segment[fill*="4ECDC4"] text {
+    fill: #000000 !important;
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Enhanced contrast for medium-colored segments - Subtle improvement */
+.wheel-segment[fill*="DDA0DD"] text,
+.wheel-segment[fill*="98D8C8"] text,
+.wheel-segment[fill*="F7DC6F"] text {
+    fill: #000000 !important;
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.7) !important;
+}
+
+/* Enhanced contrast for dark-colored segments - Subtle improvement */
+.wheel-segment[fill*="FF6B6B"] text,
+.wheel-segment[fill*="45B7D1"] text,
+.wheel-segment[fill*="BB8FCE"] text,
+.wheel-segment[fill*="85C1E9"] text,
+.wheel-segment[fill*="F8C471"] text,
+.wheel-segment[fill*="82E0AA"] text,
+.wheel-segment[fill*="F1948A"] text,
+.wheel-segment[fill*="D7BDE2"] text {
+    fill: #ffffff !important;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7) !important;
+}
+
+/* Improved input field readability across all themes */
+input[type="text"], 
+input[type="email"], 
+input[type="password"],
+textarea {
+    color: #1f2937 !important;
+    background-color: #ffffff !important;
+    border-color: #d1d5db !important;
+}
+
+input[type="text"]:focus, 
+input[type="email"]:focus, 
+input[type="password"]:focus,
+textarea:focus {
+    border-color: #8b5cf6 !important;
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1) !important;
+}
+
+/* Improved button text contrast */
+button {
+    font-weight: 600 !important;
+}
+
+/* Enhanced theme-specific text improvements */
+.theme-minimalista .text-gray-600,
+.theme-minimalista .text-gray-800 {
+    color: #374151 !important;
+}
+
+.theme-vertical-timeline .text-gray-600,
+.theme-vertical-timeline .text-gray-800 {
+    color: #475569 !important;
+}
+
+/* Improved card text readability */
+.bg-white\/95 {
+    color: #1f2937 !important;
+}
+
+.theme-neon-cyberpunk .bg-white\/95 {
+    color: #e2e8f0 !important;
+}
+
+.theme-hexagonal-grid .bg-white\/95 {
+    color: #e2e8f0 !important;
+}
+
+/* CRITICAL: Improved header button readability across all themes */
+#statsBtn,
+#settingsBtn {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-color: rgba(255, 255, 255, 0.4) !important;
+    color: #ffffff !important;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8) !important;
+    box-shadow: 
+        0 4px 6px rgba(0, 0, 0, 0.3),
+        0 2px 4px rgba(0, 0, 0, 0.2) !important;
+}
+
+#statsBtn:hover,
+#settingsBtn:hover {
+    background: rgba(255, 255, 255, 0.25) !important;
+    border-color: rgba(255, 255, 255, 0.6) !important;
+    box-shadow: 
+        0 6px 12px rgba(0, 0, 0, 0.4),
+        0 4px 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Theme-specific header button improvements */
+.theme-minimalista #statsBtn,
+.theme-minimalista #settingsBtn {
+    background: rgba(100, 116, 139, 0.9) !important;
+    border-color: rgba(100, 116, 139, 1) !important;
+    color: #ffffff !important;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5) !important;
+}
+
+.theme-vertical-timeline #statsBtn,
+.theme-vertical-timeline #settingsBtn {
+    background: rgba(100, 116, 139, 0.9) !important;
+    border-color: rgba(100, 116, 139, 1) !important;
+    color: #ffffff !important;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5) !important;
+}
+
+.theme-neon-cyberpunk #statsBtn,
+.theme-neon-cyberpunk #settingsBtn {
+    background: rgba(0, 0, 0, 0.8) !important;
+    border-color: #00ffff !important;
+    color: #00ffff !important;
+    text-shadow: 0 0 10px #00ffff !important;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.3) !important;
+}
+
+.theme-hexagonal-grid #statsBtn,
+.theme-hexagonal-grid #settingsBtn {
+    background: rgba(30, 41, 59, 0.9) !important;
+    border-color: #3b82f6 !important;
+    color: #3b82f6 !important;
+    text-shadow: 0 0 10px rgba(59, 130, 246, 0.5) !important;
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3) !important;
 }
 
 /* Performance optimizations */

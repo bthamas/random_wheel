@@ -8,11 +8,11 @@ class WheelOfFortune {
             spinHistory: []
         };
 
-        // Optimized color palette with better contrast
+        // Optimized color palette with better contrast and readability
         this.colors = [
             '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', 
             '#DDA0DD', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E9',
-            '#F8C471', '#82E0AA', '#F1948A', '#85C1E9', '#D7BDE2'
+            '#F8C471', '#82E0AA', '#F1948A', '#5DADE2', '#D7BDE2'
         ];
 
         // Performance optimization: Cache DOM elements
@@ -374,11 +374,28 @@ class WheelOfFortune {
             text.setAttribute('y', textY.toString());
             text.setAttribute('text-anchor', 'middle');
             text.setAttribute('dominant-baseline', 'central');
-            text.setAttribute('fill', 'white');
+            
+            // Calculate optimal text color based on background color
+            const r = parseInt(color.slice(1, 3), 16);
+            const g = parseInt(color.slice(3, 5), 16);
+            const b = parseInt(color.slice(5, 7), 16);
+            const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+            const textColor = luminance > 0.6 ? '#000000' : '#ffffff';
+            
+            text.setAttribute('fill', textColor);
             text.setAttribute('font-size', this.items.length > 8 ? '12' : '14');
             text.setAttribute('font-weight', '700');
             text.setAttribute('font-family', 'Poppins, sans-serif');
-            text.style.textShadow = '2px 2px 4px rgba(0,0,0,0.8)';
+            
+            // Enhanced text shadow for better readability - Clean version
+            if (luminance > 0.6) {
+                // Light background - use dark text with subtle white shadow
+                text.style.textShadow = '1px 1px 2px rgba(255,255,255,0.8)';
+            } else {
+                // Dark background - use white text with subtle black shadow
+                text.style.textShadow = '1px 1px 2px rgba(0,0,0,0.7)';
+            }
+            
             text.style.pointerEvents = 'none';
             
             // Rotate text for better readability
